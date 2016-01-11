@@ -8,7 +8,7 @@ DEST="/opt/nubomedia"
 function check_location {
   if [ ! -d "$SOURCE_CODE_DIR" ];
   then
-    echo "Can not find folder $SOURCE_CODE_DIR. Please check from where you are starting this command. It should be executed directly in the folder where the emm.sh script is located." 1>&2
+    echo "Can not find folder $SOURCE_CODE_DIR. Please check from where you are starting this command. It should be executed directly in the folder where the cm-agent.sh script is located." 1>&2
     exit 1
   fi
 }
