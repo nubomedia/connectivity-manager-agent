@@ -4,6 +4,38 @@ CONFIG_DIR="/etc/nubomedia"
 PROPERTIES_FILE="$CONFIG_DIR/cm-agent.properties"
 SOURCE_CODE_DIR="cm-agent"
 DEST="/opt/nubomedia"
+PKG_MGR=''
+QUERY_MGR=''
+
+function checkBinary {
+  echo -n " * Checking for '$1'..."
+  if command -v $1 >/dev/null 2>&1; then
+     echo "OK"
+     return 0
+   else
+     echo >&2 "FAILED."
+     return 1
+   fi
+}
+
+function set_mgrs {
+    if [ "$PKG_MGR" == '' ]; then
+        if checkBinary apt-get; then
+            PKG_MGR='apt-get'
+        elif checkBinary yum; then
+            PKG_MGR='yum'
+        fi
+    fi
+
+
+    if [ "$QUERY_MGR" == '' ]; then
+        if checkBinary dpkg; then
+            QUERY_MGR='dpkg'
+        elif checkBinary rpm; then
+            QUERY_MGR='rpm'
+        fi
+    fi
+}
 
 function check_location {
   if [ ! -d "$SOURCE_CODE_DIR" ];
@@ -121,18 +153,30 @@ function uninstall_cmagent {
 
 function is_pkg_installed {
   echo "Checking if $1 is installed"
-  if [ $(dpkg-query -W -f='${Status}' "$1" 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
-    echo "$1 is not installed"
-    return 1
+  if [ $QUERY_MGR == "dpkg" ]; then
+      if [ $(dpkg-query -W -f='${Status}' "$1" 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
+        echo "$1 is not installed"
+        return 1
+      else
+        echo "$1 is installed"
+        return 0
+      fi
   else
-    echo "$1 is installed"
-    return 0
+      if [ $(rpm -q "$1" 2>/dev/null | grep -c "$1") -eq 0 ]; then
+        echo "$1 is not installed"
+        return 1
+      else
+        echo "$1 is installed"
+        return 0
+      fi
   fi
 }
 
 function update_pkgs {
   echo "Updating packages"
-  apt-get update
+
+  $PKG_MGR update
+
   if [ "$?" ]; then
     echo "Updated packages successfully"
   else
@@ -144,7 +188,7 @@ function update_pkgs {
 function install_pkg {
   if ! is_pkg_installed "$1"; then
     echo "Installing $1"
-    apt-get install --yes --force-yes "$1"
+    $PKG_MGR install -y "$1"
     if [ "$?" ]; then
       echo "$1 was installed successfully"
     else
@@ -205,6 +249,7 @@ function start_cma {
 
 case "$1" in
 install)
+  set_mgrs
   check_root_privileges
   check_location
   check_requirements
