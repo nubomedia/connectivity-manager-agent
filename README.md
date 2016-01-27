@@ -35,3 +35,14 @@ This command set the username and password for the usage of the Openstack enviro
 	```
 
 The API of the CM Agent is now served on Port 8091.
+
+
+## LICENSE
+
+See [LICENSE][LICENSE]
+
+#### Development
+
+Do you want to contribute? Great! [Write us](mailto:nubomedia@av.tu-berlin.de)!.
+
+[LICENSE]:./LICENSE
