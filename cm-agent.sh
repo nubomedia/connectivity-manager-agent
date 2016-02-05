@@ -227,6 +227,7 @@ function check_requirements {
   update_pkgs
   install_pkg git
   install_pkg python-pip
+  install_pkg python-dev
   install_pip_pkg virtualenv
 }
 
