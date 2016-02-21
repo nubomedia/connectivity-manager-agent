@@ -1,6 +1,10 @@
 Connectivity Manager Agent
 =====================================================================================
 
+This project is part of NUBOMEDIA project: [NUBOMEDIA](http://www.nubomedia.eu/)
+
+### Install
+
 1. Compile and Install the Connectivity Manager Agent:
     ```bash
     sudo ./cm-agent.sh install	
@@ -37,11 +41,11 @@ This command set the username and password for the usage of the Openstack enviro
 The API of the CM Agent is now served on Port 8091.
 
 
-## LICENSE
+### LICENSE
 
 See [LICENSE][LICENSE]
 
-#### Development
+##### Development
 
 Do you want to contribute? Great! [Write us](mailto:nubomedia@av.tu-berlin.de)!.
 
