@@ -644,7 +644,7 @@ class Host(object):
 
     def set_flow_vm(self, flow_config):
         flow_status = []
-        hypervisor_ip = self.cloud.get_hypervisor_ip(self.hypervisor)
+
 
         logging.info('Flow config %s',flow_config)
 
@@ -652,7 +652,7 @@ class Host(object):
 
             current_flow = {}
             logging.info('Setting flow on Queue: ip %s', qv.get("src_ipv4"))
-
+            hypervisor_ip = self.cloud.get_hypervisor_ip(qv.get("dest_hyp"))
             current_flow = self.ovsclient.add_flow_to_queue(hypervisor_ip, qv.get('src_ipv4'),qv.get("dest_ipv4"), qv.get("protocol"),
                                                            qv.get('priority'), qv.get('ovs_port_number'), qv.get("queue_number"))
 
