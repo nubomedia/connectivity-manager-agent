@@ -115,15 +115,22 @@ class Client(object):
     def add_flow_to_queue(self, hypervisor_ip, src_ip, destination_ip, protocol, priority, ovs_port_number, queue_port):
 
         ret = {}
-        protocoll = ""
 
         if protocol == "tcp":
             protocoll = "6"
         elif protocol == "udp":
             protocoll = "17"
 
-        flow = "dl_type=0x0800,nw_dst=" + destination_ip + ",nw_src=" + src_ip + ",nw_proto=" + protocoll + ",priority=" + priority + "actions=enqueue:" \
-               + ovs_port_number + ":" + queue_port
+    # FIXME: strip_vlan only as workaround. THIS WILL BREAK STUFF.
+    # Currently the openstack multinode vlan tags are not properly stripped
+	# so we do this as an UGLY WORKAROUND
+        if destination_ip is None:
+            destination_ip = ""
+            flow = "in_port=" + ovs_port_number  + ",actions=strip_vlan,set_queue:" + queue_port + ",normal"
+        else:
+            destination_ip = ",nw_dst=" + destination_ip
+            flow = "dl_type=0x0800" + destination_ip + ",nw_src=" + src_ip + ",nw_proto=" + protocoll + ",priority=" + priority + ",actions=strip_vlan,enqueue:" + ovs_port_number + ":" + queue_port
+
         logging.debug('Flow to be added to the switch: %s', flow )
         output = subprocess.check_output(["sudo", "ovs-ofctl", "add-flow", "tcp:%s" % hypervisor_ip, flow])
 
